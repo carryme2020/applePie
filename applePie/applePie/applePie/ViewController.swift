@@ -18,16 +18,18 @@ class ViewController: UIViewController {
     
     @IBOutlet var letterButtons: [UIButton]!
     
-    var listOfWords = ["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
+    var listOfWords = ["aaa","bb","cc"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
     let incorrectMoveAllowed = 7
     
     var totalWins = 0 {
         didSet {
+            checkAndShowResultPopup(isWin: true)
             newRound()
         }
     }
     var totalLoses = 0 {
         didSet {
+            checkAndShowResultPopup(isWin: false)
             newRound()
         }
     }
@@ -75,6 +77,35 @@ class ViewController: UIViewController {
         let letter = Character(letterString.lowercased())
         currentGame.playerGuessed(letter: letter)
         updateGameState()//updateUI()
+//        checkAndShowResultPopup()
+    }
+    /// 결과를 확인해서, 팝업을 띄운다.
+    func checkAndShowResultPopup(isWin: Bool) {
+        var title = ""
+        var message = ""
+        
+        if listOfWords.isEmpty == true { /// 전체 게임이 끝났음.
+            title = "게임 끄읏~!"
+
+            message = "승: \(totalWins), 패: \(totalLoses)"
+        }
+        else { /// 각 게임이 끝났음.
+            if isWin == true {
+                title = "이겼음!!!!"
+                message = "앞으로 \(listOfWords.count)번 남았음!"
+            }
+            else {
+                title = "졌다..ㅠ.ㅜ"
+                message = "남은 기회는 \(listOfWords.count)번 뿐.. ㅠ.ㅜ"
+            }
+        }
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        alert.addAction(UIAlertAction(title: "다시 도전", style: .cancel))
+        
+        self.present(alert, animated: true)
     }
     
     func updateGameState() {
