@@ -18,40 +18,77 @@ class ViewController: UIViewController {
     
     @IBOutlet var letterButtons: [UIButton]!
     
-    var listOfWords = ["aaa","bb","cc"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
+    var listOfWords = ["aaa","bbb","ccc"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
+    var replayList: [String] = []
+ 
     let incorrectMoveAllowed = 7
-    
+
     var totalWins = 0 {
         didSet {
             checkAndShowResultPopup(isWin: true)
+            saveTheFirstWord()
             newRound()
         }
     }
     var totalLoses = 0 {
         didSet {
             checkAndShowResultPopup(isWin: false)
+            saveTheFirstWord()
             newRound()
         }
     }
-    
-    var currentGame:Game!  //
+
+    var currentGame:Game!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        saveTheFirstWord()
         newRound()/////뉴라운드 실행
         
         // Do any additional setup after loading the view.
     }
+    
 
+ 
+    func saveTheFirstWord() {
+        var theFirstWord :String?
+        theFirstWord = "\(String(describing: listOfWords.first))"
+       
+        if let theWord = theFirstWord {
+            print(theWord)
+            }
+        }
+
+   
+    
     func newRound() {//뉴라운드 동작
         if !listOfWords.isEmpty {
             let newWord = listOfWords.removeFirst()//첫번째것을 꺼내면서 어레이에서는 삭제//
+//            manager.registerUndo(withTarget: listOfWords) { $0.add(word) }
             currentGame = Game(word: newWord, incorrectMovesRemaining: incorrectMoveAllowed, guessedLetters:[])
             //현재게임을 게임스트럭쳐로 초기화함.뉴워드를 주고 7이라고 정의된 인코랙트무브어라우드 값으로 7번의 기회를 가지는 새로운 게임이 완성됨
             updateUI()
             enabledLetterButtons(true)
             //모든 켜는 함수
-            
+   
+        } else {
+            enabledLetterButtons(false)
+            //모든 끄는 함수
+        }
+    }
+    
+    func replayRound() {//replay라운드 동작
+        if !listOfWords.isEmpty {
+            replayList.insert("\(saveTheFirstWord())", at: 0)
+            replayList.append("\(listOfWords)")
+            let newWord = replayList.removeFirst()
+
+            currentGame = Game(word: newWord, incorrectMovesRemaining: incorrectMoveAllowed, guessedLetters:[])
+            //현재게임을 게임스트럭쳐로 초기화함.뉴워드를 주고 7이라고 정의된 인코랙트무브어라우드 값으로 7번의 기회를 가지는 새로운 게임이 완성됨
+            updateUI()
+            enabledLetterButtons(true)
+            //모든 켜는 함수
+   
         } else {
             enabledLetterButtons(false)
             //모든 끄는 함수
@@ -79,6 +116,8 @@ class ViewController: UIViewController {
         updateGameState()//updateUI()
 //        checkAndShowResultPopup()
     }
+    
+    
     /// 결과를 확인해서, 팝업을 띄운다.
     func checkAndShowResultPopup(isWin: Bool) {
         var title = ""
@@ -86,7 +125,6 @@ class ViewController: UIViewController {
         
         if listOfWords.isEmpty == true { /// 전체 게임이 끝났음.
             title = "게임 끄읏~!"
-
             message = "승: \(totalWins), 패: \(totalLoses)"
         }
         else { /// 각 게임이 끝났음.
@@ -102,10 +140,22 @@ class ViewController: UIViewController {
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        alert.addAction(UIAlertAction(title: "다시 도전", style: .cancel))
         
-        self.present(alert, animated: true)
+        let okAction = UIAlertAction(title: "확인", style: .default)
+        let resetAction = UIAlertAction(title: "다시 도전", style: .cancel, handler : {action in
+            self.replayRound()
+        } )
+        
+        
+        alert.addAction(resetAction)
+        alert.addAction(okAction)
+
+        self.present(alert, animated: true, completion: nil)
+        
+//        alert.addAction(UIAlertAction(title: "확인", style: .default))
+//        alert.addAction(UIAlertAction(title: "다시 도전", style: .cancel))
+//
+//        self.present(alert, animated: true)
     }
     
     func updateGameState() {
