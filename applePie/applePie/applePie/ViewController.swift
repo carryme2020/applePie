@@ -24,7 +24,6 @@ class ViewController: UIViewController {
     var listOfWords = ["apple","bread","cake"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
    
     var replayList = Array<String>()
-
  
     
  
@@ -52,14 +51,14 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    func saveTheFirstWord() {
-        var theFirstWord :String?
-        theFirstWord = "\(String(describing: listOfWords.first))"
-       
+    func saveTheFirstWord(_ array: [String]) -> [String] {
+        var theFirstWord = [String]()
+        theFirstWord = listOfWords
+        
         if let theWord = theFirstWord {
-            print(theWord)
-            }
+            return(theWord)
         }
+    }
 
    
     
