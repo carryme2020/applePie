@@ -18,22 +18,27 @@ class ViewController: UIViewController {
     
     @IBOutlet var letterButtons: [UIButton]!
     
-    var listOfWords = ["aaa","bbb","ccc"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
-    var replayList: [String] = []
+    @IBOutlet weak var theFirstWordSaved: UILabel!
+    
+    
+    var listOfWords = ["apple","bread","cake"] //["buccaneer", "swift", "glorious", "incandescent", "bug", "program"]
+   
+    var replayList = Array<String>()
+
+ 
+    
  
     let incorrectMoveAllowed = 7
 
     var totalWins = 0 {
         didSet {
             checkAndShowResultPopup(isWin: true)
-            saveTheFirstWord()
             newRound()
         }
     }
     var totalLoses = 0 {
         didSet {
             checkAndShowResultPopup(isWin: false)
-            saveTheFirstWord()
             newRound()
         }
     }
@@ -42,14 +47,11 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        saveTheFirstWord()
         newRound()/////뉴라운드 실행
         
         // Do any additional setup after loading the view.
     }
     
-
- 
     func saveTheFirstWord() {
         var theFirstWord :String?
         theFirstWord = "\(String(describing: listOfWords.first))"
@@ -62,27 +64,10 @@ class ViewController: UIViewController {
    
     
     func newRound() {//뉴라운드 동작
+        saveTheFirstWord()
         if !listOfWords.isEmpty {
             let newWord = listOfWords.removeFirst()//첫번째것을 꺼내면서 어레이에서는 삭제//
 //            manager.registerUndo(withTarget: listOfWords) { $0.add(word) }
-            currentGame = Game(word: newWord, incorrectMovesRemaining: incorrectMoveAllowed, guessedLetters:[])
-            //현재게임을 게임스트럭쳐로 초기화함.뉴워드를 주고 7이라고 정의된 인코랙트무브어라우드 값으로 7번의 기회를 가지는 새로운 게임이 완성됨
-            updateUI()
-            enabledLetterButtons(true)
-            //모든 켜는 함수
-   
-        } else {
-            enabledLetterButtons(false)
-            //모든 끄는 함수
-        }
-    }
-    
-    func replayRound() {//replay라운드 동작
-        if !listOfWords.isEmpty {
-            replayList.insert("\(saveTheFirstWord())", at: 0)
-            replayList.append("\(listOfWords)")
-            let newWord = replayList.removeFirst()
-
             currentGame = Game(word: newWord, incorrectMovesRemaining: incorrectMoveAllowed, guessedLetters:[])
             //현재게임을 게임스트럭쳐로 초기화함.뉴워드를 주고 7이라고 정의된 인코랙트무브어라우드 값으로 7번의 기회를 가지는 새로운 게임이 완성됨
             updateUI()
@@ -103,6 +88,7 @@ class ViewController: UIViewController {
         
         let wordWithSpacing = letters.joined(separator: " ")
         
+        theFirstWordSaved.text = "\(saveTheFirstWord())"
         correctWordLabel.text = wordWithSpacing //currentGame.formattedWord
         scoreLabel.text = "Wins: \(totalWins), Loses: \(totalLoses)"
         treeImageView.image = UIImage(named: "Tree \(currentGame.incorrectMovesRemaining)")
@@ -142,9 +128,10 @@ class ViewController: UIViewController {
         
         
         let okAction = UIAlertAction(title: "확인", style: .default)
-        let resetAction = UIAlertAction(title: "다시 도전", style: .cancel, handler : {action in
-            self.replayRound()
-        } )
+        let resetAction = UIAlertAction(title: "다시 도전", style: .cancel, handler :nil)
+//        { [self]action in
+//            self.replayRound()
+//        } )
         
         
         alert.addAction(resetAction)
